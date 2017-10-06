@@ -49,11 +49,24 @@ public class TCPClient {
                 );
 
 
+                // int test = server.read();
+
+                final Lock _mutex = new ReentrantLock(true);
+
+                _mutex.lock();
+
+                // your protected code here
+                output.write((int) id);
+                long prID = id;
+                id++;
+
+                _mutex.unlock();
+
 
                 while (true) {
 
 
-                    message = "HELLO " + socket.getInetAddress() + " " + socket.getPort() + " " + System.lineSeparator();
+                    message = "HELLO " + socket.getInetAddress() + " " + socket.getPort() + " " + prID + System.lineSeparator();
                     //id++;
                     senttime = System.nanoTime();
                     output.writeBytes(message);
@@ -62,6 +75,27 @@ public class TCPClient {
                     receivetime = System.nanoTime();
                     // latencytable[count]=receivetime-senttime;
 
+                    if (response.equals("end")) {
+                        // System.out.println("testing");
+                        socket.close();
+                        System.out.println(Arrays.toString(latencytable));
+                        int x = 0;
+                        long sum = 0;
+                        while (latencytable[x] != 0) {
+                            sum = sum + latencytable[x];
+                            x++;
+                            if (x == 300)
+                                break;
+                        }
+                        //x--;
+                        System.out.println("The Sum Latency is: " + sum / 1000000);
+                        System.out.println("The Average Latency is: " + (sum / x) / 1000000);
+
+                        fout.write(String.valueOf((sum / x) / 1000000) + "\n");
+                        fout.close();
+
+                        break;
+                    }
                     System.out.println(response);
                     latencytable[count] = receivetime - senttime;
                     count++;
