@@ -1,5 +1,3 @@
-package com.tcp.server;
-
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -12,7 +10,8 @@ public class MultiThreadedTCPServer {
     public static final int timeinterval = 1 * 1000;
     public static int counter = 0;
     public static long start = System.currentTimeMillis();
-    public  static long sumofsum=0;
+    public static int sum = 0 ;
+    public static int count=0;
     public static int RandomNumber() {
         long num;
         int max = 2000, min = 300;
@@ -33,7 +32,7 @@ public class MultiThreadedTCPServer {
     public static String payload() {
         String pl = "";
 
-        long size = RandomNumber() * 1024;
+        long size = RandomNumber() * 1;
         StringBuilder sb = new StringBuilder();
 
         while (size > 0) {
@@ -71,7 +70,7 @@ public class MultiThreadedTCPServer {
                         new InputStreamReader(this.client.getInputStream())
                 );
 
-               // output.write(this.clientid); //for the ID
+             	this.clientid=reader.read(); //for the ID
 
                 this.clientbuffer = reader.readLine();
                 requests = 1;
@@ -79,14 +78,20 @@ public class MultiThreadedTCPServer {
                 while (this.clientbuffer != null) {
 
                     System.out.println(this.clientbuffer);
-                    counter++;
+                    
 
                     //System.out.println(counter);
-                    output.writeBytes("Welcome " + this.clientid + " " + this.client.getInetAddress() + " " + payload() + System.lineSeparator());
+                    output.writeBytes("Welcome " +  this.clientid +  " " + this.client.getInetAddress() + " " + payload() + System.lineSeparator());
+		    counter++;
 
                     if ((System.currentTimeMillis() - start) > timeinterval) {
 
                         System.out.println(counter);
+			sum = sum + counter;
+			count++;
+			System.out.println("The current sum is:"+sum);
+			System.out.println("The current count is"+count);
+			System.out.println("The current throughput is :"+ (double) sum/count);
                         counter = 0;
                         start = System.currentTimeMillis();
                     }
@@ -100,8 +105,6 @@ public class MultiThreadedTCPServer {
                     }
                     requests++;
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -124,7 +127,7 @@ public class MultiThreadedTCPServer {
 
             long start = System.currentTimeMillis();
             while (true) {
-                System.out.println("skase");
+                
                 Socket client = socket.accept();
 
                 // System.out.println(counter);
