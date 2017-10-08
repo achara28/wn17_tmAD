@@ -1,4 +1,5 @@
 
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,8 +13,11 @@ public class MultiThreadedTCPServer {
     public static long start = System.currentTimeMillis();
     public static int sum = 0 ;
     public static int count=0;
+    public static int end_count=0;
+    public static int limit;
     public static int RandomNumber() {
-        long num;
+	      
+  long num;
         int max = 2000, min = 300;
         int range = (max - min) + 1;
         /* do {
@@ -32,7 +36,7 @@ public class MultiThreadedTCPServer {
     public static String payload() {
         String pl = "";
 
-        long size = RandomNumber() * 1;
+        long size = RandomNumber() * 1024;
         StringBuilder sb = new StringBuilder();
 
         while (size > 0) {
@@ -48,13 +52,13 @@ public class MultiThreadedTCPServer {
         private Socket client;
         private String clientbuffer;
         private int clientid;
-        private int limit;
+        //private int limit;
 
-        public TCPWorker(Socket client, int id, int limit) {
+        public TCPWorker(Socket client, int id) {
             this.client = client;
             this.clientbuffer = "";
            // this.clientid = id;
-            this.limit = limit;
+            //this.limit = limit;
         }
 
         @Override
@@ -83,6 +87,8 @@ public class MultiThreadedTCPServer {
                     //System.out.println(counter);
                     output.writeBytes("Welcome " +  this.clientid +  " " + this.client.getInetAddress() + " " + payload() + System.lineSeparator());
 		    counter++;
+		    end_count++;
+		    System.out.println("The end_count is :"+ end_count);
 
                     if ((System.currentTimeMillis() - start) > timeinterval) {
 
@@ -99,7 +105,9 @@ public class MultiThreadedTCPServer {
 
                     this.clientbuffer = reader.readLine();
                     // System.out.println(requests);
-                    if (requests == limit || requests == 300) {
+                    if ( end_count >= limit ) {
+			System.out.println("MPENW RE FILOUI MOU   "+ end_count + " limit: "+limit);
+
                         output.writeBytes("end\n");
                         break;
                     }
@@ -120,7 +128,8 @@ public class MultiThreadedTCPServer {
 
 
             int port = Integer.parseInt(args[0]);
-            int limit = Integer.parseInt(args[1]);
+             limit = Integer.parseInt(args[1]);
+	    System.out.println("The Limit is :"+limit);
             ServerSocket socket = new ServerSocket(port);
             System.out.println("Server listening to: " + socket.getInetAddress() + ":" + socket.getLocalPort());
             int id = 1;
@@ -133,7 +142,7 @@ public class MultiThreadedTCPServer {
                 // System.out.println(counter);
 
                 TCP_WORKER_SERVICE.submit(
-                        new TCPWorker(client, id++, limit)
+                        new TCPWorker(client, id++)
                 );
                 //System.out.println(counter);
             }
