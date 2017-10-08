@@ -13,16 +13,30 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
+
+/**
+ *This class simulates at minimum of 10 tcp clients who establishes a connection 
+ *with a server hosted on a virtual machine and requesting data from him. It is implemented using 
+ *multithreading code. Every tcp client is a thread and clients are running concurrently and every
+ *client generate a series of requests towards the server.The client sends a hello message which comprises of
+ *a "hello" string the client's ip and the port and the client id. 
+ * 
+ */
+
+
 public class TCPClient {
 
     public static long id = 1;
     static String serverIp;
     static int port;
 
-
+/**Inner class Client which extends threads and implements runnable interface for multithreading*/
     static class Client extends Thread implements Runnable {
 
-
+/**When an object implementing interface Runnable is used to create a thread, starting the 
+ *thread causes the object's run method to be called in that separately executing thread.
+ *The general contract of the method run is that it may take any action whatsoever.
+ */
         @Override
         public void run() {
             try {
@@ -55,7 +69,7 @@ public class TCPClient {
 
                 _mutex.lock();
 
-                // your protected code here
+               /**protect code using a mutex because of multithreading (protect clients id variable)*/ 
                 output.write((int) id);
                 long prID = id;
                 id++;
@@ -67,7 +81,7 @@ public class TCPClient {
 
 
                     message = "HELLO " + socket.getInetAddress() + " " + socket.getPort() + " " + prID + System.lineSeparator();
-                    //id++;
+                
                     senttime = System.nanoTime();
                     output.writeBytes(message);
 
@@ -76,7 +90,7 @@ public class TCPClient {
                     // latencytable[count]=receivetime-senttime;
 
                     if (response.equals("end")) {
-                        // System.out.println("testing");
+                        
                         socket.close();
                         System.out.println(Arrays.toString(latencytable));
                         int x = 0;
@@ -87,7 +101,7 @@ public class TCPClient {
                             if (x == 300)
                                 break;
                         }
-                        //x--;
+                        
                         System.out.println("The Sum Latency is: " + sum / 1000000);
                         System.out.println("The Average Latency is: " + (sum / x) / 1000000);
 
@@ -112,7 +126,7 @@ public class TCPClient {
 
     }
 
-
+/**Main method reading and parsing from command line and starts the simulation*/
     public static void main(String args[]) {
 
         serverIp = args[0];
