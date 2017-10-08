@@ -20,7 +20,9 @@ import java.util.concurrent.locks.ReentrantLock;
  *multithreading code. Every tcp client is a thread and clients are running concurrently and every
  *client generate a series of requests towards the server.The client sends a hello message which comprises of
  *a "hello" string the client's ip and the port and the client id. 
- * 
+ *
+ * @author Andreas Charalampous Danakis Christodoulides
+ *
  */
 
 
@@ -126,7 +128,13 @@ public class TCPClient {
 
     }
 
-/**Main method reading and parsing from command line and starts the simulation*/
+/**Main method reading and parsing from command line and starts the simulation
+  * To run the program execute java TCPClient _server's IP_ _Port_
+  *
+  * @param args arguments from command lines
+  *
+  *	
+  */
     public static void main(String args[]) {
 
         serverIp = args[0];
